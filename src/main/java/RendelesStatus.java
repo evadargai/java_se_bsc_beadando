@@ -1,0 +1,2 @@
+public enum RendelesStatus {DELIVERED,BOOKED,IN_PROGRESS,FAILED_DELIVERY}
+

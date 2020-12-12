@@ -1,3 +1,4 @@
+
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -5,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class vasarlasTest {
     Termek termek1 = new Termek(BigInteger.valueOf(1), "Concept Kids:Állatok", 10495, 2);
@@ -47,7 +46,7 @@ public class vasarlasTest {
         String email="email5";
         String telefon="telefon5";
         BigInteger rendelesId=BigInteger.valueOf(1);
-        Date megrendelesDatum=Calendar.getInstance().getTime();
+        Date megrendelesDatum= Calendar.getInstance().getTime();
         FizetesModja fizetesModja=FizetesModja.CARD;
         KezbesitesModja kezbesitesModja=KezbesitesModja.ONLINE;
         SzallitasModja szallitasModja=SzallitasModja.COURIER_HOME_DELIVERY;

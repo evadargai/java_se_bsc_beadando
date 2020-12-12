@@ -1,12 +1,10 @@
-import org.junit.Test;
 
+import org.junit.Test;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
 
 public class RendelesTest {
 

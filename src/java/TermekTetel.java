@@ -28,13 +28,13 @@ public class TermekTetel extends Termek {
 
     @Override
     public String toString() {
-        return "TermekTetel{" +"\n"+
-                ", Termék Id=" + termekId +"\n"+
-                ", név='" + nev + '\'' +"\n"+
-                ", mennyiség='" + mennyiseg + '\'' +"\n"+
-                "  egységár*mennyiség=" + getar() +"\n"+
-                ", egysegAr=" + egysegAr +"\n"+
-                ", OSSZMENNYISEG=" + OSSZMENNYISEG +"\n"+
+        return "Termék Tétel(ek){" +"\n"+
+                ", Termék Id      =" + termekId +"\n"+
+                ", Termék neve    ='" + nev + '\'' +"\n"+
+                ", Mennyiség      ='" + mennyiseg + '\'' +"\n"+
+                "  Ára            =" + getar() +"\n"+
+                ", Egység Ár      =" + egysegAr +"\n"+
+                ", ÖSSZ MENNYISEG =" + OSSZMENNYISEG +"\n"+
                 '}';
     }
 }

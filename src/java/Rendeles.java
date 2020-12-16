@@ -198,8 +198,8 @@ public class Rendeles  {
          termekTetel.setEgysegAr(termek.egysegAr);
          termekTetel.setMennyiseg(mennyiseg);
          if (termek.OSSZMENNYISEG<mennyiseg){
-             //throw new IllegalArgumentException(termek.nev+" termékből a rendelhető mennyiseg max. "+termek.OSSZMENNYISEG+" db");
-             System.out.println(termek.nev+" termékből a rendelhető mennyiseg max. "+termek.OSSZMENNYISEG+" db");
+             throw new IllegalArgumentException(termek.nev+" termékből a rendelhető mennyiseg max. "+termek.OSSZMENNYISEG+" db");
+             //System.out.println(termek.nev+" termékből a rendelhető mennyiseg max. "+termek.OSSZMENNYISEG+" db");
            }
          termekTetel.setMennyiseg(Math.min(termek.getOsszMennyiseg(),mennyiseg));
          termekTetel.setOsszMennyiseg(termek.getOsszMennyiseg()-Math.min(termek.getOsszMennyiseg(),mennyiseg));
@@ -296,16 +296,28 @@ public class Rendeles  {
                 rendeles.atadasFutarnak(rendeles);
                 rendeles.RendelesStatusAllitasSzallitaskor(rendeles, szallitasStatus);
                 if (rendeles.rendelesStatus.equals(RendelesStatus.FAILED_DELIVERY)) {
+                    if (megjegyzes==null){
+                        throw new IllegalArgumentException("A megjegyzés sikertelen szállításkor kitöltendő !");
+                    }
+                    else{
                     rendeles.setMegjegyzes(megjegyzes);
+                    }
                 }
                 else{
-                    if (rendeles.getMegjegyzes()!=null){
-                        rendeles.setMegjegyzes(null);
+                    if (megjegyzes!=null){
+                        //rendeles.setMegjegyzes(null);
                         //System.out.println("A megjegyzés csak sikertelen szállításkor kitölthető !");
                         throw new IllegalArgumentException("A megjegyzés csak sikertelen szállításkor kitölthető !");
                     }
                 }
             }
+        }
+        else{ if (szallitasModja!=null){
+            throw new IllegalArgumentException("Személyes vásárlásnál a szállítás módja nem kitölthető !");
+             }
+              if (szallitasStatus!=null){
+                  throw new IllegalArgumentException("Személyes vásárlásnál a szállítás státusza nem kitölthető !");
+              }
         }
         System.out.println(rendeles);
     }
@@ -314,17 +326,17 @@ public class Rendeles  {
 
     @Override
     public String toString() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz");
-    return  "  rendelesId=" + rendelesId +"\n"+
-            ", user név='" + userName +"\n"+
-            ", megrendeles Dátuma=" + dateFormat.format(megrendelesDatum) +"\n"+
-            ", megrendelés ár összesen=" + getAr() +"\n"+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss zzz");
+    return  "  Rendeles Id             = " + rendelesId +"\n"+
+            ", User név                = '" + userName +"\n"+
+            ", Megrendeles Dátuma      = " + dateFormat.format(megrendelesDatum) +"\n"+
+            ", Megrendelés ár összesen = " + getAr() +"\n"+
             ", tetelList=" + tetelList +"\n"+
-            ", Fizetes Módja=" + fizetesModja +"\n"+
-            ", Kézbesites Módja=" + kezbesitesModja +"\n"+
-            ", Szallitás Módja=" + szallitasModja +"\n"+
-            ", rendelesStatus=" + rendelesStatus +"\n"+
-            ", megjegyzés='" + megjegyzes + '\'' +
+            ", Fizetes    Módja = " + fizetesModja +"\n"+
+            ", Kézbesites Módja = " + kezbesitesModja +"\n"+
+            ", Szállitás  Módja = " + szallitasModja +"\n"+
+            ", Rendelés Status  = " + rendelesStatus +"\n"+
+            ", Megjegyzés       = '" + megjegyzes + '\'' +
             '}';
     }
 }

@@ -19,6 +19,21 @@ public class Rendeles  {
     public Rendeles(BigInteger rendelesId,
                     String userName,
                     Date megrendelesDatum,
+                    List<TermekTetel> tetelList,
+                    FizetesModja fizetesModja,
+                    KezbesitesModja kezbesitesModja)
+    {
+        this.rendelesId       = rendelesId;
+        this.userName         = userName;
+        this.megrendelesDatum = megrendelesDatum;
+        this.tetelList        = tetelList;
+        this.fizetesModja     = fizetesModja;
+        this.kezbesitesModja  = kezbesitesModja;
+    }
+
+    public Rendeles(BigInteger rendelesId,
+                    String userName,
+                    Date megrendelesDatum,
                     FizetesModja fizetesModja,
                     KezbesitesModja kezbesitesModja)
     {
@@ -29,6 +44,36 @@ public class Rendeles  {
         this.kezbesitesModja  = kezbesitesModja;
     }
 
+    public Rendeles(BigInteger rendelesId,
+                    String userName,
+                    Date megrendelesDatum,
+                    FizetesModja fizetesModja,
+                    KezbesitesModja kezbesitesModja,
+                    SzallitasModja szallitasModja)
+    {
+        this.rendelesId       = rendelesId;
+        this.userName         = userName;
+        this.megrendelesDatum = megrendelesDatum;
+        this.fizetesModja     = fizetesModja;
+        this.kezbesitesModja  = kezbesitesModja;
+        this.szallitasModja   = szallitasModja;
+    }
+    public Rendeles(BigInteger rendelesId,
+                    String userName,
+                    Date megrendelesDatum,
+                    FizetesModja fizetesModja,
+                    KezbesitesModja kezbesitesModja,
+                    SzallitasModja szallitasModja,
+                    String megjegyzes) {
+
+        this.rendelesId = rendelesId;
+        this.userName = userName;
+        this.megrendelesDatum = megrendelesDatum;
+        this.fizetesModja = fizetesModja;
+        this.kezbesitesModja = kezbesitesModja;
+        this.szallitasModja = szallitasModja;
+        this.megjegyzes = megjegyzes;
+    }
     public Rendeles(BigInteger rendelesId,
                     String userName,
                     Date megrendelesDatum,
@@ -145,6 +190,7 @@ public class Rendeles  {
     }
 
      public Felhasznalo felhasznaloKeres(String userName,
+                                         String password,
                                          List<Felhasznalo> felhasznalok) {
          if (userName == null){
              throw new IllegalArgumentException("Nincs user megadva !");
@@ -152,7 +198,13 @@ public class Rendeles  {
 
          for (Felhasznalo fh : felhasznalok) {
             if (fh.userName.equals(userName)) {
-                return fh;
+                if (fh.getPassword().equals(password)) {
+                    return fh;
+                }
+                else{
+                    throw new IllegalArgumentException("Hibás jelszó !");
+                }
+
             }
         }
         return null;
@@ -170,7 +222,6 @@ public class Rendeles  {
         }
         return null;
     }
-
 
     public void rendelesStatusAllitasInditaskor(Rendeles rendeles) {
 
@@ -211,9 +262,9 @@ public class Rendeles  {
     }
 
     public void RendelesStatusAllitasSzallitaskor(Rendeles rendeles,SzallitasStatus szallitasStatus) {
-        if (szallitasStatus==null){
+        /*if (szallitasStatus==null){
             throw new IllegalArgumentException("Nincs megadva a szállítás státusza ! ");
-        }
+        }*/
         {
             if (szallitasStatus.equals(SzallitasStatus.UNSUCCESSFUL)) {
                 rendeles.rendelesStatus = RendelesStatus.FAILED_DELIVERY;
@@ -222,112 +273,125 @@ public class Rendeles  {
                 rendeles.rendelesStatus = RendelesStatus.DELIVERED;
         }
     }
-    public Megrendelo vasarlasMegrendeloig(Rendeles rendeles,
-                                           String userName,
-                                           String password ,
-                                           FelhasznaloStatus felhasznaloStatus,
+    public Megrendelo rendelesMegrendeloje(Felhasznalo felhasznalo,
                                            List<Felhasznalo> felhasznalok,
                                            List<Megrendelo> megrendelok) {
-        Felhasznalo felhasznalo = new Felhasznalo();
-        if (felhasznaloStatus == FelhasznaloStatus.CUSTOMER) {
-            Megrendelo megrendelo = new Megrendelo();
+        Megrendelo megrendelo=new Megrendelo();
+        if (felhasznalo.getFelhasznaloStatus() == FelhasznaloStatus.CUSTOMER) {
             Felhasznalo felhasznaloTalalt;
-            felhasznaloTalalt = rendeles.felhasznaloKeres(userName, felhasznalok);
+            felhasznaloTalalt = felhasznaloKeres(felhasznalo.getUserName(),felhasznalo.getPassword(),felhasznalok);
+            // ha nincs ilyen felhasználó
             if (felhasznaloTalalt==null) {
-                felhasznalo.setUserName(userName);
-                felhasznalo.setPassword(password);
-                felhasznalo.setFelhasznaloStatus(felhasznaloStatus);}
+                Felhasznalo ujFelhasznalo = new Felhasznalo();
+                felhasznalo.setUserName(felhasznalo.getUserName());
+                felhasznalo.setPassword(felhasznalo.getPassword());
+                felhasznalo.setFelhasznaloStatus(felhasznalo.getFelhasznaloStatus());
+                // egyelőre csak a megrendelő user kap értéket
+                megrendelo.setUserName(felhasznalo.getUserName());
+                }
             else    {
-                    megrendelo = rendeles.megrendeloKeres(userName, megrendelok);
+                Megrendelo talaltMegrendelo;
+                talaltMegrendelo = megrendeloKeres(felhasznalo.getUserName(), megrendelok);
+                if (talaltMegrendelo == null) {
+                        megrendelo.setUserName(felhasznalo.getUserName());
+                    }
+                else{
+                    megrendelo=talaltMegrendelo;
+                }
             }
             return megrendelo;
         }
        return null;
     }
 
-    public void vasarlas(String userName,
-                         String password,
-                         FelhasznaloStatus felhasznaloStatus,
-                         String nev,
-                         String cim,
-                         String email,
-                         String telefon,
-                         BigInteger rendelesId,
-                         Date megrendelesDatum,
-                         FizetesModja fizetesModja,
-                         KezbesitesModja kezbesitesModja,
-                         List<TermekTetel> termekTetelList,
-                         SzallitasModja szallitasModja,
+
+    public void vasarlas(Felhasznalo felhasznalo,
+                         Megrendelo megrendelo,
+                         Rendeles rendeles,
                          SzallitasStatus szallitasStatus,
-                         String megjegyzes,
                          List<Felhasznalo> felhasznalok,
                          List<Megrendelo> megrendelok) {
-        Rendeles rendeles = new Rendeles();
-        Megrendelo megrendelo = new Megrendelo();
         Megrendelo talaltMegrendelo;
-        talaltMegrendelo = rendeles.vasarlasMegrendeloig(rendeles,
-                                                         userName,
-                                                         password,
-                                                         felhasznaloStatus,
-                                                         felhasznalok,
-                                                         megrendelok);
-        // ha olyan felhasznaló lépett be, aki nem megrendelo hanem pl futár, admin, egyéb
-        if (talaltMegrendelo == null) {
-            // nincs kidolgozva
-        } else {
-            // Új megrendelő
-            if (megrendelo.getUserName()==null) {
-                megrendelo.setUserName(userName);
-                megrendelo.setAdatok(nev,cim,email,telefon);
+        talaltMegrendelo = rendelesMegrendeloje(felhasznalo,
+                                                felhasznalok,
+                                                megrendelok);
+        //System.out.println("megrendelo="+talaltMegrendelo);
+            if (talaltMegrendelo.getUserName()!=null && talaltMegrendelo.getNev()==null) {
+                megrendelo.setAdatok(megrendelo.getNev(), megrendelo.getCim(), megrendelo.getEmail(), megrendelo.getTelefon());
             }
-        }
-        rendeles.setUserIdDatumFizetesKezbesitesModja(userName,
-                                                      rendelesId,
-                                                      megrendelesDatum,
-                                                      fizetesModja,
-                                                      kezbesitesModja);
-        // terméktétel lista létrehozása
-        rendeles.setTetelList(termekTetelList);
-        rendeles.rendelesStatusAllitasInditaskor(rendeles);
+            else{
+                megrendelo=talaltMegrendelo;
+            }
 
-        if (rendeles.kezbesitesModja.equals(KezbesitesModja.ONLINE)) {
-            if (szallitasModja.equals(SzallitasModja.COURIER_HOME_DELIVERY)) {
-                rendeles.setSzallitasModja(szallitasModja);
-                rendeles.atadasFutarnak(rendeles);
-                rendeles.RendelesStatusAllitasSzallitaskor(rendeles, szallitasStatus);
-                if (rendeles.rendelesStatus.equals(RendelesStatus.FAILED_DELIVERY)) {
-                    if (megjegyzes==null){
-                        throw new IllegalArgumentException("A megjegyzés sikertelen szállításkor kitöltendő !");
-                    }
-                    else{
-                    rendeles.setMegjegyzes(megjegyzes);
+        rendeles.rendelesStatusAllitasInditaskor(rendeles);
+            if (rendeles.getKezbesitesModja().equals(KezbesitesModja.ONLINE)) {
+                if (rendeles.getSzallitasModja() != null){
+                    if (rendeles.getSzallitasModja().equals(SzallitasModja.COURIER_HOME_DELIVERY)) {
+                        rendeles.atadasFutarnak(rendeles);
+                        if (szallitasStatus != null) {
+                            rendeles.RendelesStatusAllitasSzallitaskor(rendeles, szallitasStatus);
+                            if (rendeles.rendelesStatus.equals(RendelesStatus.FAILED_DELIVERY)) {
+                                if (rendeles.getMegjegyzes() == null) {
+                                    throw new IllegalArgumentException("A megjegyzés sikertelen szállításkor kitöltendő !");
+                                }
+
+                            } else {
+                                if (rendeles.getMegjegyzes() != null) {
+                                    throw new IllegalArgumentException("A megjegyzés csak sikertelen szállításkor kitölthető !");
+                                }
+                            }
+                        }
                     }
                 }
-                else{
-                    if (megjegyzes!=null){
-                        //rendeles.setMegjegyzes(null);
-                        //System.out.println("A megjegyzés csak sikertelen szállításkor kitölthető !");
-                        throw new IllegalArgumentException("A megjegyzés csak sikertelen szállításkor kitölthető !");
-                    }
+            } else {
+                if (rendeles.getSzallitasModja() != null) {
+                    throw new IllegalArgumentException("Személyes vásárlásnál a szállítás módja nem kitölthető !");
+                }
+                if (szallitasStatus != null) {
+                    throw new IllegalArgumentException("Személyes vásárlásnál a szállítás státusza nem kitölthető !");
                 }
             }
-        }
-        else{ if (szallitasModja!=null){
-            throw new IllegalArgumentException("Személyes vásárlásnál a szállítás módja nem kitölthető !");
-             }
-              if (szallitasStatus!=null){
-                  throw new IllegalArgumentException("Személyes vásárlásnál a szállítás státusza nem kitölthető !");
-              }
-        }
-        System.out.println(rendeles);
+
+        teljesRendelesKiiras(rendeles,megrendelo,szallitasStatus);
     }
 
+    public void teljesRendelesKiiras(Rendeles rendeles,
+                                     Megrendelo megrendelo,
+                                     SzallitasStatus szallitasstatus){
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss zzz");
+
+        System.out.println(" User név            = " + rendeles.getUserName());
+        System.out.println(" Megrendelő név      = " + megrendelo.getNev());
+        System.out.println(" Cím                 = " + megrendelo.getCim());
+        System.out.println(" Email               = " + megrendelo.getEmail());
+        System.out.println(" Telefon             = " + megrendelo.getTelefon());
+        System.out.println(" Rendeles Id         = " + rendeles.getRendelesId());
+        System.out.println(" Megrendeles Dátuma  = " + dateFormat.format(rendeles.getMegrendelesDatum()));
+        System.out.println(" ----------------------------------------------------------- ");
+        System.out.println(" Tételek =" + rendeles.getTetelList());
+        System.out.println(" ----------------------------------------------------------- ");
+        System.out.println(" Ár összesen         = " + rendeles.getAr());
+        System.out.println(" Fizetes    Módja    = " + rendeles.getFizetesModja());
+        System.out.println(" Kézbesites Módja    = " + rendeles.getKezbesitesModja());
+        if (rendeles.getKezbesitesModja().equals(KezbesitesModja.ONLINE)) {
+            System.out.println(" Szállitás  Módja    = " + rendeles.getSzallitasModja());
+        }
+        System.out.println(" Rendelés Status     = " + rendeles.getRendelesStatus());
+        if (rendeles.getKezbesitesModja().equals(KezbesitesModja.ONLINE)) {
+            System.out.println(" Szállítás Status    = " + szallitasstatus);
+        }
+        if (rendeles.getKezbesitesModja().equals(KezbesitesModja.ONLINE) && szallitasstatus!=null && szallitasstatus.equals(SzallitasStatus.UNSUCCESSFUL)) {
+
+            System.out.println(" Megjegyzés          =  " + rendeles.getMegjegyzes());
+        }
+    }
 
 
     @Override
     public String toString() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss zzz");
-    return  "  Rendeles Id             = " + rendelesId +"\n"+
+        return  "  Rendeles Id             = " + rendelesId +"\n"+
             ", User név                = '" + userName +"\n"+
             ", Megrendeles Dátuma      = " + dateFormat.format(megrendelesDatum) +"\n"+
             ", Megrendelés ár összesen = " + getAr() +"\n"+

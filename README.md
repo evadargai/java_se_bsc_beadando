@@ -1,3 +1,11 @@
+﻿
+A feladat megoldásakor feltételeztem, hogy az applikációt nem csak megrendelésre fogják használni, hanem pl kiszállításra is.
+Ezeket a részeket nem dolgoztam ki, de ezért nem minden felhasználó egyben megrendelő is.
+Az egyes metódusok tesztje a RendelesTest-ben van.
+A vásárlás állapotainak tesztje a vasarlasTest-ben van.
+
+Feladat leírása:
+================
 # java_se_bsc_beadando
 Beadási határiő: 2020.december.18
 Formátum: GitHub repository URL-t küldeni

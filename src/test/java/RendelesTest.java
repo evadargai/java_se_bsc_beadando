@@ -37,6 +37,7 @@ public class RendelesTest {
         felhasznalok.add(felhasznalo4);
         felhasznalok.add(felhasznalo5);
         felhasznaloTalalt=rendeles.felhasznaloKeres("user4",
+                                                     "psw4",
                                                     felhasznalok);
         System.out.println(felhasznaloTalalt);
     }
@@ -86,68 +87,5 @@ public class RendelesTest {
         SzallitasStatus szallitasStatus=SzallitasStatus.SUCCESSFUL;
         rendeles.RendelesStatusAllitasSzallitaskor(rendeles,szallitasStatus);
         System.out.println(rendeles.rendelesStatus);
-    }
-
-    @Test
-    public void vasarlasFolyamat() {
-        List<Felhasznalo> felhasznalok = new ArrayList<>();
-        felhasznalok.add(felhasznalo1);
-        felhasznalok.add(felhasznalo2);
-        felhasznalok.add(felhasznalo3);
-        felhasznalok.add(felhasznalo4);
-        felhasznalok.add(felhasznalo5);
-        List<Megrendelo> megrendelok = new ArrayList<>();
-        megrendelok.add(megrendelo1);
-        megrendelok.add(megrendelo2);
-        megrendelok.add(megrendelo3);
-        megrendelok.add(megrendelo4);
-
-        String userName = "user6";
-        String password = "psw6";
-        Rendeles rendeles = new Rendeles();
-        Megrendelo megrendelo = new Megrendelo();
-        FelhasznaloStatus felhasznaloStatus = FelhasznaloStatus.CUSTOMER;
-        Megrendelo talaltMegrendelo;
-        talaltMegrendelo = rendeles.vasarlasMegrendeloig(rendeles,
-                userName,
-                password,
-                felhasznaloStatus,
-                felhasznalok,
-                megrendelok);
-        // ha olyan felhasznaló lépett be, aki nem megrendelo hanem pl futár, admin, egyéb
-        if (talaltMegrendelo == null) {
-             //TODO
-        } else {
-            // Új megrendelő
-            if (megrendelo.getUserName()==null) {
-                megrendelo.setUserName(userName);
-                megrendelo.setAdatok("megrendelo5", "cim5", "email5", "telefon5");
-            }
-            System.out.println(megrendelo);
-        }
-        rendeles.setUserIdDatumFizetesKezbesitesModja(userName,
-                BigInteger.valueOf(1),
-                Calendar.getInstance().getTime(),
-                FizetesModja.CARD,
-                KezbesitesModja.ONLINE);
-        // terméktétel lista létrehozása
-        List<TermekTetel> termekTetelList=new ArrayList<>();
-        termekTetelList.add(rendeles.TermekTetelHozzaadas(termek1,2));
-        termekTetelList.add(rendeles.TermekTetelHozzaadas(termek2,1));
-        rendeles.setTetelList(termekTetelList);
-        rendeles.rendelesStatusAllitasInditaskor(rendeles);
-
-        if (rendeles.kezbesitesModja.equals(KezbesitesModja.ONLINE)) {
-            SzallitasModja szallitasModja=SzallitasModja.COURIER_HOME_DELIVERY;
-            if (szallitasModja.equals(SzallitasModja.COURIER_HOME_DELIVERY)) {
-                rendeles.setSzallitasModja(szallitasModja);
-                rendeles.atadasFutarnak(rendeles);
-                rendeles.RendelesStatusAllitasSzallitaskor(rendeles, SzallitasStatus.UNSUCCESSFUL);
-                if (rendeles.rendelesStatus.equals(RendelesStatus.FAILED_DELIVERY)) {
-                    rendeles.setMegjegyzes("Nem voltak otthon");
-                }
-            }
-        }
-        System.out.println(rendeles);
     }
 }

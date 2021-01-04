@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.*;
+
 
 public class RendelesTest {
 
@@ -39,7 +42,8 @@ public class RendelesTest {
         felhasznaloTalalt=rendeles.felhasznaloKeres("user4",
                                                      "psw4",
                                                     felhasznalok);
-        System.out.println(felhasznaloTalalt);
+        assertThat(felhasznaloTalalt, equalTo(felhasznalo4));
+        //System.out.println(felhasznaloTalalt);
     }
 
     @Test
@@ -52,6 +56,7 @@ public class RendelesTest {
         megrendelok.add(megrendelo3);
         megrendelok.add(megrendelo4);
         megrendelo=rendeles.megrendeloKeres("user1",megrendelok);
+        assertThat(megrendelo, equalTo(megrendelo1));
         System.out.println(megrendelo);
     }
 
@@ -60,25 +65,27 @@ public class RendelesTest {
         Rendeles rendeles=new Rendeles();
         rendeles.kezbesitesModja=KezbesitesModja.ONLINE;
         rendeles.rendelesStatusAllitasInditaskor(rendeles);
-        System.out.println(rendeles.rendelesStatus);
+        assertThat(rendeles.rendelesStatus, equalTo(RendelesStatus.BOOKED));
+        //System.out.println(rendeles.rendelesStatus);
     }
 
     @Test
     public void termekTetelHozzaadas() {
         Rendeles rendeles=new Rendeles();
-        List<TermekTetel> termekTetelek=new ArrayList<>();
-        termekTetelek.add(rendeles.TermekTetelHozzaadas(termek1, 1));
-        termekTetelek.add(rendeles.TermekTetelHozzaadas(termek2,1));
-        rendeles.setTetelList(termekTetelek);
-        System.out.println("A rendelt tételek összértéke:"+rendeles.getAr());
+        rendeles.TermekTetelHozzaadas(termek1, 1);
+        rendeles.TermekTetelHozzaadas(termek2,1);
+        assertThat(termek1.OSSZMENNYISEG, equalTo(1));
+        assertThat(termek2.OSSZMENNYISEG, equalTo(0));
     }
+
 
     @Test
     public void atadasFutarnak() {
         Rendeles rendeles=new Rendeles();
         rendeles.kezbesitesModja=KezbesitesModja.ONLINE;
         rendeles.atadasFutarnak(rendeles);
-        System.out.println(rendeles.rendelesStatus);
+        assertThat(rendeles.rendelesStatus, equalTo(RendelesStatus.IN_PROGRESS));
+        //System.out.println(rendeles.rendelesStatus);
     }
 
     @Test
@@ -86,6 +93,9 @@ public class RendelesTest {
         Rendeles rendeles=new Rendeles();
         SzallitasStatus szallitasStatus=SzallitasStatus.SUCCESSFUL;
         rendeles.RendelesStatusAllitasSzallitaskor(rendeles,szallitasStatus);
-        System.out.println(rendeles.rendelesStatus);
+        assertThat(rendeles.rendelesStatus, equalTo(RendelesStatus.DELIVERED));
+        //System.out.println(rendeles.rendelesStatus);
     }
+
+
 }

@@ -253,8 +253,14 @@ public class Rendeles  {
              //System.out.println(termek.nev+" termékből a rendelhető mennyiseg max. "+termek.OSSZMENNYISEG+" db");
            }
          termekTetel.setMennyiseg(Math.min(termek.getOsszMennyiseg(),mennyiseg));
-         termekTetel.setOsszMennyiseg(termek.getOsszMennyiseg()-Math.min(termek.getOsszMennyiseg(),mennyiseg));
-         return termekTetel;
+
+        //System.out.println("termekTetel.getMennyiseg(): "+termekTetel.getMennyiseg());
+
+        termekTetel.setOsszMennyiseg(termek.getOsszMennyiseg()-Math.min(termek.getOsszMennyiseg(),mennyiseg));
+        termek.setOsszMennyiseg(termekTetel.getOsszMennyiseg());
+        //System.out.println("termekTetel.getOsszMennyiseg(): "+termekTetel.getOsszMennyiseg());
+
+        return termekTetel;
        }
 
     public void atadasFutarnak(Rendeles rendeles) {

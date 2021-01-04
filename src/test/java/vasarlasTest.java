@@ -7,6 +7,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 public class vasarlasTest {
     Termek termek1 = new Termek(BigInteger.valueOf(1), "Concept Kids:Állatok", 10495, 2);
     Termek termek2 = new Termek(BigInteger.valueOf(2), "Bűvös henger logikai játék", 1295, 1);
@@ -57,6 +60,10 @@ public class vasarlasTest {
                           SzallitasStatus.UNSUCCESSFUL,
                           felhasznalok,
                           megrendelok);
+        assertThat(termek1.getOsszMennyiseg(), equalTo(0));
+        assertThat(termek2.getOsszMennyiseg(), equalTo(0));
+        assertThat(rendeles.rendelesStatus, equalTo(RendelesStatus.FAILED_DELIVERY));
+        assertThat(rendeles.getAr(), equalTo(22285));
 
     }
     @Test
@@ -82,7 +89,7 @@ public class vasarlasTest {
                 SzallitasModja.COURIER_HOME_DELIVERY,
                 "Nem voltak otthon");
         List<TermekTetel> termekTetelList=new ArrayList<>();
-        termekTetelList.add(rendeles.TermekTetelHozzaadas(termek1,2));
+        termekTetelList.add(rendeles.TermekTetelHozzaadas(termek1,1));
         termekTetelList.add(rendeles.TermekTetelHozzaadas(termek2,1));
         rendeles.setTetelList(termekTetelList);
         rendeles.vasarlas(felhasznalo,
@@ -91,6 +98,11 @@ public class vasarlasTest {
                 SzallitasStatus.UNSUCCESSFUL,
                 felhasznalok,
                 megrendelok);
+        assertThat(termek1.getOsszMennyiseg(), equalTo(1));
+        assertThat(termek2.getOsszMennyiseg(), equalTo(0));
+        assertThat(rendeles.rendelesStatus, equalTo(RendelesStatus.FAILED_DELIVERY));
+        assertThat(rendeles.getAr(), equalTo(11790));
+
 
     }
   @Test
@@ -125,7 +137,12 @@ public class vasarlasTest {
                           SzallitasStatus.SUCCESSFUL,
                           felhasznalok,
                           megrendelok);
-    }
+      assertThat(termek3.getOsszMennyiseg(), equalTo(1));
+      assertThat(termek4.getOsszMennyiseg(), equalTo(3));
+      assertThat(rendeles.rendelesStatus, equalTo(RendelesStatus.DELIVERED));
+      assertThat(rendeles.getAr(), equalTo(22985));
+
+  }
 
     @Test
     public void onlineVasarlasSikeresSzallitasUjMegrendelo() {
@@ -150,7 +167,7 @@ public class vasarlasTest {
                                        SzallitasModja.COURIER_HOME_DELIVERY);
         List<TermekTetel> termekTetelList=new ArrayList<>();
         termekTetelList.add(rendeles.TermekTetelHozzaadas(termek3,2));
-        termekTetelList.add(rendeles.TermekTetelHozzaadas(termek4,1));
+        termekTetelList.add(rendeles.TermekTetelHozzaadas(termek4,2));
         rendeles.setTetelList(termekTetelList);
         SzallitasStatus szallitasstatus =SzallitasStatus.SUCCESSFUL;
         rendeles.vasarlas(felhasznalo,
@@ -159,6 +176,11 @@ public class vasarlasTest {
                 SzallitasStatus.SUCCESSFUL,
                 felhasznalok,
                 megrendelok);
+        assertThat(termek3.getOsszMennyiseg(), equalTo(1));
+        assertThat(termek4.getOsszMennyiseg(), equalTo(2));
+        assertThat(rendeles.rendelesStatus, equalTo(RendelesStatus.DELIVERED));
+        assertThat(rendeles.getAr(), equalTo(27980));
+
     }
 @Test
     public void szemelyesVasarlasLetezoMegrendelo() {
@@ -190,6 +212,11 @@ public class vasarlasTest {
                           null,
                           felhasznalok,
                           megrendelok);
+    assertThat(termek3.getOsszMennyiseg(), equalTo(1));
+    assertThat(termek4.getOsszMennyiseg(), equalTo(1));
+    assertThat(rendeles.rendelesStatus, equalTo(RendelesStatus.DELIVERED));
+    assertThat(rendeles.getAr(), equalTo(32975));
+
     }
 @Test
     public void szemelyesVasarlasLetezoUjMegrendelo() {
@@ -221,9 +248,14 @@ public class vasarlasTest {
                 null,
                 felhasznalok,
                 megrendelok);
+    assertThat(termek3.getOsszMennyiseg(), equalTo(1));
+    assertThat(termek4.getOsszMennyiseg(), equalTo(1));
+    assertThat(rendeles.rendelesStatus, equalTo(RendelesStatus.DELIVERED));
+    assertThat(rendeles.getAr(), equalTo(32975));
+
     }
 
-@Test
+@Test(expected = IllegalArgumentException.class)
     public void szemelyesVasarlasHibasJelszo() {
         List<Felhasznalo> felhasznalok = new ArrayList<>();
         felhasznalok.add(felhasznalo1);
@@ -254,7 +286,8 @@ public class vasarlasTest {
                           felhasznalok,
                           megrendelok);
     }
-    @Test
+
+    @Test (expected = IllegalArgumentException.class)
     public void szemelyesVasarlasVanSzallitasModja() {
         List<Felhasznalo> felhasznalok = new ArrayList<>();
         felhasznalok.add(felhasznalo1);
@@ -285,8 +318,9 @@ public class vasarlasTest {
                 null,
                 felhasznalok,
                 megrendelok);
+
     }
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void onlineVasarlasSikertelenSzallitasLetezoMegrendeloNincsMegjegyzes() {
         List<Felhasznalo> felhasznalok = new ArrayList<>();
         felhasznalok.add(felhasznalo1);
@@ -320,7 +354,7 @@ public class vasarlasTest {
 
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void onlineVasarlasSikertelenSzallitasNincsElegKeszleten() {
         List<Felhasznalo> felhasznalok = new ArrayList<>();
         felhasznalok.add(felhasznalo1);
@@ -352,6 +386,9 @@ public class vasarlasTest {
                 SzallitasStatus.UNSUCCESSFUL,
                 felhasznalok,
                 megrendelok);
+        assertThat(rendeles.rendelesStatus, equalTo(RendelesStatus.BOOKED));
+
+
 
     }
     @Test
@@ -384,6 +421,7 @@ public class vasarlasTest {
                 null,
                 felhasznalok,
                 megrendelok);
+       assertThat(rendeles.rendelesStatus, equalTo(RendelesStatus.BOOKED));
 
     }
     @Test
@@ -417,6 +455,8 @@ public class vasarlasTest {
                 null,
                 felhasznalok,
                 megrendelok);
+        assertThat(rendeles.rendelesStatus, equalTo(RendelesStatus.IN_PROGRESS));
+
 
     }
 
